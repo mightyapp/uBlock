@@ -302,6 +302,9 @@ const createDefaultProps = function() {
 /******************************************************************************/
 
 try {
+    // https://github.com/uBlockOrigin/uBlock-issues/issues/1608
+    vAPI.adminStorage.onChanged(( ) => vAPI.app.restart());
+
     // https://github.com/gorhill/uBlock/issues/531
     await µb.restoreAdminSettings();
     log.info(`Admin settings ready ${Date.now()-vAPI.T0} ms after launch`);
