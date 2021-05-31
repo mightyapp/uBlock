@@ -1433,6 +1433,13 @@ vAPI.adminStorage = (( ) => {
                 return bin[key];
             }
             return bin;
+        },
+        onChanged: function(callback) {
+            webext.storage.onChanged.addListener((changes, areaName) => {
+                if ( areaName === 'managed' ) {
+                    callback(changes);
+                }
+            });
         }
     };
 })();
