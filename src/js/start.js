@@ -111,11 +111,11 @@ const onVersionReady = function(lastVersion) {
     µb.redirectEngine.invalidateResourcesSelfie();
 
     const lastVersionInt = vAPI.app.intFromVersion(lastVersion);
-    if ( lastVersionInt === 0 ) { return; }
 
     // https://github.com/LiCybora/NanoDefenderFirefox/issues/196
     //   Toggle on the blocking of CSP reports by default for Firefox.
     if (
+        lastVersionInt !== 0 &&
         vAPI.webextFlavor.soup.has('firefox') &&
         lastVersionInt <= 1031003011
     ) {
@@ -332,7 +332,7 @@ try {
 
     // https://github.com/uBlockOrigin/uBlock-issues/issues/1365
     //   Wait for onCacheSettingsReady() to be fully ready.
-    await Promise.all([
+    const [ , , lastVersion ] = await Promise.all([
         µb.loadSelectedFilterLists().then(( ) => {
             log.info(`List selection ready ${Date.now()-vAPI.T0} ms after launch`);
         }),
@@ -354,6 +354,13 @@ try {
             log.info(`PSL ready ${Date.now()-vAPI.T0} ms after launch`);
         }),
     ]);
+
+    // https://github.com/uBlockOrigin/uBlock-issues/issues/1547
+    if ( lastVersion === '0.0.0.0' && vAPI.webextFlavor.soup.has('chromium') ) {
+        vAPI.app.restart();
+        return;
+    }
+
 } catch (ex) {
     console.trace(ex);
 }
